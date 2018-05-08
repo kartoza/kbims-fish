@@ -1,0 +1,7 @@
+include README.rst
+include LICENSE
+recursive-include fish/static *
+recursive-include fish/templates *
+recursive-include docs *
+recursive-exclude core *
+recursive-exclude example *

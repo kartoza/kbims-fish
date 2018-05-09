@@ -5,7 +5,7 @@
 
 from django.db import models
 
-from fish.models.biological_collection_record import \
+from bims.models.biological_collection_record import \
     BiologicalCollectionRecord
 
 

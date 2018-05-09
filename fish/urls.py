@@ -15,7 +15,6 @@ api_urls = [
 ]
 
 urlpatterns = [
-    url(regex=r'^upload/$',
-        view=CsvUploadView.as_view(),
-        name='csv-upload'),
+# Add custom URL paths here 
+
 ] + api_urls

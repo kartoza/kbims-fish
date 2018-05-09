@@ -45,5 +45,6 @@ setup(
         ],
         dependency_links=[
             'git+https://github.com/soynatan/django-easy-audit.git',
+            'git+https://github.com/dimasciput/django-bims.git',
         ]
 )

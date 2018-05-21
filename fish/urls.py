@@ -12,6 +12,7 @@ api_urls = [
     url(r'^api/fish-collections/$', FishCollectionList.as_view()),
     url(r'^api/fish-collections/(?P<pk>[0-9]+)/$',
         FishCollectionDetail.as_view()),
+    url('r^fish/upload/$', CsvUploadView.as_view()),
 ]
 
 urlpatterns = [

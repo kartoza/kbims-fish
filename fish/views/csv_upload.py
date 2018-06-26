@@ -21,7 +21,7 @@ class CsvUploadView(FormView):
     form_class = CsvUploadForm
     template_name = 'csv_uploader.html'
     context_data = dict()
-    success_url = reverse_lazy('csv-upload')
+    success_url = reverse_lazy('fish:fish-csv-upload')
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
@@ -39,7 +39,7 @@ class CsvUploadView(FormView):
         # Read csv
         csv_file = form.instance.csv_file
 
-        with open(csv_file.path, newline='') as csvfile:
+        with open(csv_file.path, 'r') as csvfile:
             csv_reader = csv.DictReader(csvfile)
             for record in csv_reader:
                 try:

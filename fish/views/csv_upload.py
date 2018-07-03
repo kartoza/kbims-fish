@@ -72,8 +72,8 @@ class CsvUploadView(FormView):
                             site=location_site,
                             original_species_name=record['Species'],
                             category=record['Category'].lower(),
-                            present=record['Present'] == 1,
-                            absent=record['Absent'] == 1,
+                            present=record['Present'] == '1',
+                            absent=record['Absent'] == '1',
                             collection_date=datetime(
                                     int(record['Year']), 1, 1),
                             collector=record['Collector'],

@@ -5,12 +5,19 @@
 import csv
 from datetime import datetime
 from django.urls import reverse_lazy
+from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
 from django.views.generic import FormView
 from fish.forms.csv_upload import CsvUploadForm
 from bims.models import (
     LocationSite,
     LocationType,
+)
+from bims.models.location_site import (
+    location_site_post_save_handler
+)
+from bims.models.biological_collection_record import (
+    collection_post_save_update_cluster
 )
 from fish.models.fish_collection_record import FishCollectionRecord
 
@@ -38,6 +45,15 @@ class CsvUploadView(FormView):
 
         # Read csv
         csv_file = form.instance.csv_file
+
+        # disconnect post save handler of location sites
+        # it is done from record signal
+        models.signals.post_save.disconnect(
+            location_site_post_save_handler,
+        )
+        models.signals.post_save.disconnect(
+            collection_post_save_update_cluster,
+        )
 
         with open(csv_file.path, 'r') as csvfile:
             csv_reader = csv.DictReader(csvfile)
@@ -88,4 +104,13 @@ class CsvUploadView(FormView):
 
         self.context_data['uploaded'] = 'Fish added ' + \
                                         str(fish_processed['added'])
+
+        # reconnect post save handler of location sites
+        models.signals.post_save.connect(
+            location_site_post_save_handler,
+        )
+        models.signals.post_save.connect(
+            collection_post_save_update_cluster,
+        )
+
         return super(CsvUploadView, self).form_valid(form)

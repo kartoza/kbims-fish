@@ -26,7 +26,7 @@ class CsvUploadView(FormView):
     """Csv upload view."""
 
     form_class = CsvUploadForm
-    template_name = 'csv_uploader.html'
+    template_name = 'fish_csv_uploader.html'
     context_data = dict()
     success_url = reverse_lazy('fish:fish-csv-upload')
 

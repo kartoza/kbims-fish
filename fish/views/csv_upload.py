@@ -3,6 +3,7 @@
 """
 
 import csv
+import sys
 from datetime import datetime
 from django.urls import reverse_lazy
 from django.contrib.gis.db import models
@@ -85,7 +86,7 @@ class CsvUploadView(FormView):
 
                     # Get existed taxon
                     collections = FishCollectionRecord.objects.filter(
-                            original_species_name=record['Species']
+                            original_species_name=record['species_name']
                     )
 
                     taxon_gbif = None
@@ -95,7 +96,14 @@ class CsvUploadView(FormView):
                     # Optional fields and value
                     optional_records = {}
 
-                    for (opt_field, field_type) in optional_fields.iteritems():
+                    if (sys.version_info > (3, 0)):
+                        # Python 3 code in this block
+                        optional_fields_iter = optional_fields.items()
+                    else:
+                        # Python 2 code in this block
+                        optional_fields_iter = optional_fields.iteritems()
+
+                    for (opt_field, field_type) in optional_fields_iter:
                         if opt_field in record:
                             if field_type == 'bool':
                                 record[opt_field] = record[opt_field] == '1'

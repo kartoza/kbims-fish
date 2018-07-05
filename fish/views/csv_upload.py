@@ -38,9 +38,14 @@ class CsvUploadView(FormView):
 
     def form_valid(self, form):
         form.save(commit=True)
-        fish_processed = {
+        collection_processed = {
             'added': 0,
             'failed': 0
+        }
+
+        optional_fields = {
+            'present': 'bool',
+            'absent': 'bool'
         }
 
         # Read csv
@@ -55,24 +60,28 @@ class CsvUploadView(FormView):
             collection_post_save_update_cluster,
         )
 
+        location_sites = []
         with open(csv_file.path, 'r') as csvfile:
             csv_reader = csv.DictReader(csvfile)
             for record in csv_reader:
                 try:
+                    print('------------------------------------')
+                    print('Processing : %s' % record['species_name'])
                     location_type, status = LocationType.objects.get_or_create(
-                            name='RiverPointObservation',
-                            allowed_geometry='POINT'
+                        name='PointObservation',
+                        allowed_geometry='POINT'
                     )
 
                     record_point = Point(
-                            float(record['Longitude']),
-                            float(record['Latitude']))
+                        float(record['longitude']),
+                        float(record['latitude']))
 
                     location_site, status = LocationSite.objects.get_or_create(
                         location_type=location_type,
                         geometry_point=record_point,
-                        name=record['River'],
+                        name=record['location_site'],
                     )
+                    location_sites.append(location_site)
 
                     # Get existed taxon
                     collections = FishCollectionRecord.objects.filter(
@@ -83,27 +92,41 @@ class CsvUploadView(FormView):
                     if collections:
                         taxon_gbif = collections[0].taxon_gbif_id
 
-                    collection, collection_status = FishCollectionRecord.\
-                        objects.get_or_create(
-                            site=location_site,
-                            original_species_name=record['Species'],
-                            category=record['Category'].lower(),
-                            present=record['Present'] == '1',
-                            absent=record['Absent'] == '1',
-                            collection_date=datetime(
-                                    int(record['Year']), 1, 1),
-                            collector=record['Collector'],
-                            notes=record['Notes'],
-                            habitat=record['Habitat'].lower(),
-                            taxon_gbif_id=taxon_gbif,
-                        )
-                    if collection_status:
-                        fish_processed['added'] += 1
-                except ValueError:
-                    fish_processed['failed'] += 1
+                    # Optional fields and value
+                    optional_records = {}
 
-        self.context_data['uploaded'] = 'Fish added ' + \
-                                        str(fish_processed['added'])
+                    for (opt_field, field_type) in optional_fields.iteritems():
+                        if opt_field in record:
+                            if field_type == 'bool':
+                                record[opt_field] = record[opt_field] == '1'
+                            optional_records[opt_field] = record[opt_field]
+
+                    collection_records, status = FishCollectionRecord.\
+                        objects.\
+                        get_or_create(
+                            site=location_site,
+                            original_species_name=record['species_name'],
+                            category=record['category'].lower(),
+                            collection_date=datetime.strptime(
+                                    record['date'], '%Y-%m-%d'),
+                            collector=record['collector'],
+                            notes=record['notes'],
+                            habitat=record['habitat'].lower(),
+                            taxon_gbif_id=taxon_gbif,
+                            owner=self.request.user,
+                            **optional_records
+                        )
+
+                    if not status:
+                        print('%s Added' % record['species_name'])
+                        collection_processed['added'] += 1
+
+                except (ValueError, KeyError):
+                    collection_processed['failed'] += 1
+                print('------------------------------------')
+
+        self.context_data['uploaded'] = 'Collection added ' + \
+                                        str(collection_processed['added'])
 
         # reconnect post save handler of location sites
         models.signals.post_save.connect(

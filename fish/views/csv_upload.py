@@ -109,7 +109,7 @@ class CsvUploadView(FormView):
                                 record[opt_field] = record[opt_field] == '1'
                             optional_records[opt_field] = record[opt_field]
 
-                    collection_records, status = FishCollectionRecord.\
+                    collection_records, created = FishCollectionRecord.\
                         objects.\
                         get_or_create(
                             site=location_site,
@@ -125,7 +125,7 @@ class CsvUploadView(FormView):
                             **optional_records
                         )
 
-                    if not status:
+                    if created:
                         print('%s Added' % record['species_name'])
                         collection_processed['added'] += 1
 

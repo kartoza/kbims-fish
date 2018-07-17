@@ -1,3 +1,0 @@
--r deployment/docker/REQUIREMENTS.txt
--r deployment/docker/REQUIREMENTS-dev.txt
-nodeenv==1.2.0

@@ -1,5 +1,6 @@
 {% extends 'shapefile_uploader.html' %}
 
+{% block upload_csv_url %} /fish/upload {% endblock %}
 {% block module_name %} fish {% endblock %}
 {% block required_fields %}
     species(string), location(string), notes(string), category(string), date(yyyy-mm-dd), collector(string), habitat(string)

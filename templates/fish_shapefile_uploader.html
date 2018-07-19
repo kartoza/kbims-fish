@@ -1,0 +1,8 @@
+{% extends 'shapefile_uploader.html' %}
+
+{% block module_name %} fish {% endblock %}
+{% block required_fields %}
+    species(string), location(string), notes(string), category(string), date(yyyy-mm-dd), collector(string), habitat(string)
+{% endblock %}
+
+{% block process_shapefile_url %}'/fish/process_shapefiles/'{% endblock %};

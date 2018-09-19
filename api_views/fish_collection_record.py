@@ -30,6 +30,18 @@ class FishCollectionDetail(APIView):
             raise Http404
 
     def get(self, request, pk, format=None):
+
         fish_collection = self.get_object(pk)
         serializer = FishCollectionSerializer(fish_collection)
+        return Response(serializer.data)
+
+
+class FishCollectionSite(APIView):
+    """
+    Retrieve a fish collection instance.
+    """
+
+    def get(self, request, pk_site, format=None):
+        fish_collection = FishCollectionRecord.objects.filter(site=pk_site)
+        serializer = FishCollectionSerializer(fish_collection, many=True)
         return Response(serializer.data)

@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from fish.api_views.fish_collection_record import (
     FishCollectionList,
     FishCollectionDetail,
+    FishCollectionSite,
 )
 from fish.views.csv_upload import CsvUploadView
 from fish.views.shapefile_upload import \
@@ -23,6 +24,8 @@ api_urls = [
         name='fish-shapefile-upload'),
     url(r'^fish/process_shapefiles/$', fish_process_shapefiles,
         name='fish-process_shapefiles'),
+    url(r'api/fish-collections-site/(?P<pk_site>[0-9]+)/$',
+        FishCollectionSite.as_view()),
 ]
 
 urlpatterns = api_urls

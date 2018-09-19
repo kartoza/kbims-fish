@@ -54,7 +54,7 @@ $.ajax({
                 backgroundColor: getRandomColor()
             })
         }
-        
+
         for(var i=0; i<data.length; i++){
             $.each(categoryOrigin, function (idx, val) {
                 if(data[i]['category'] === val){
@@ -108,15 +108,27 @@ function createTimelineGraph(canvas, labels, dataset) {
       datasets: dataset
     },
     options: {
+      title: {
+          display: true,
+          text: 'Origin'
+      },
       legend: {
           display: false
       },
       scales: {
          xAxes: [{
-            stacked: true
+             stacked: true,
+             scaleLabel: {
+                display: true,
+                labelString: 'Collection date'
+             }
          }],
          yAxes: [{
-            stacked: true
+             stacked: true,
+             scaleLabel: {
+                display: true,
+                labelString: 'Records'
+             }
          }]
       }
     }

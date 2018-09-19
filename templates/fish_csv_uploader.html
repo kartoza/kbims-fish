@@ -4,7 +4,7 @@
 {% block upload_shp_url %} /fish/upload_shp {% endblock %}
 {% block module_name %} fish {% endblock %}
 {% block required_fields %} latitude(float), longitude(float), species_name(string), location_site(string), notes(string), category(string), date(yyyy-mm-dd), collector(string), habitat(string) {% endblock %}
-{% block optional_fields%} present(int), absent(int) {% endblock %}
+{% block optional_fields%} present(int), absent(int), depth_cm(float), near_bed_velocity(string), substrate(string), ec(float), ph(float), do(float), temp(string), turbidity(string), nutrients(string){% endblock %}
 {% block download_example_button %}
 <a class="btn btn-success"
    href="{% static "data/fish_data_example.csv" %}"

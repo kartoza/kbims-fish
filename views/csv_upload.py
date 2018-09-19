@@ -16,5 +16,14 @@ class CsvUploadView(BaseCsvUploadView):
     additional_fields = {
         'present': 'bool',
         'absent': 'bool',
-        'habitat': 'str'
+        'habitat': 'str',
+        'depth_cm': 'float',
+        'near_bed_velocity': 'str',
+        'substrate': 'str',
+        'ec': 'float',
+        'ph': 'float',
+        'do': 'float',
+        'temp': 'str',
+        'turbidity': 'str',
+        'nutrients': 'str',
     }

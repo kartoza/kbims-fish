@@ -143,7 +143,7 @@ $.ajax({
 
             occurenceTable.append(recordTable);
         });
-        $('#occurence-table').html(occurenceTable).prepend('<span>Fish</span>');
+        $('#occurence-table').html(occurenceTable).prepend('<span>Fish</span>&nbsp;&nbsp;<a style="text-decoration: underline; font-size: 11pt; !important;" href="/fish/download-csv-site/' + locationSitePk + '/">Download as CSV</a>');
 
         createPieChart(document.getElementById("fish-category-graph").getContext('2d'), Object.values(originData), categoryOrigin, pieOptions, originColor);
         createTimelineGraph(document.getElementById("fish-timeline-graph").getContext('2d'), originDataDate, filteredDataset, originOptions);

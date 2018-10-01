@@ -76,6 +76,16 @@ class FishCollectionRecord(BiologicalCollectionRecord):
         blank=True
     )
 
+    hydraulic_biotope = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    fbis_site_code = models.CharField(
+        max_length=50,
+        blank=True
+    )
+
     # noinspection PyClassicStyleClass
     class Meta:
         """Meta class for project."""

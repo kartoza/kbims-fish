@@ -4,7 +4,6 @@ from django.db.models import Count
 from fish.models.fish_collection_record import FishCollectionRecord
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.renderers import JSONRenderer
 
 
 class FishSummary(APIView):
@@ -15,10 +14,17 @@ class FishSummary(APIView):
             FishCollectionRecord.objects.values(
                 category).annotate(total=Count(category))
 
-        response = JSONRenderer().render(fish_summary)
-        response = json.loads(response)
-        response.append({
-            'total_fish': FishCollectionRecord.objects.all().count()
-        })
+        response = {}
+
+        for summary in fish_summary:
+            class_name = summary[category]
+            if not class_name:
+                continue
+            if class_name not in response:
+                response[class_name] = 0
+
+            response[class_name] += summary['total']
+
+        response['total_fish'] = FishCollectionRecord.objects.all().count()
 
         return Response(response)

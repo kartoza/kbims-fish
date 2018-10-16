@@ -15,15 +15,16 @@ class FishSummary(APIView):
                 category).annotate(total=Count(category))
 
         response = {}
+        response['category'] = {}
 
         for summary in fish_summary:
             class_name = summary[category]
             if not class_name:
                 continue
             if class_name not in response:
-                response[class_name] = 0
+                response['category'][class_name] = 0
 
-            response[class_name] += summary['total']
+            response['category'][class_name] += summary['total']
 
         response['total_fish'] = FishCollectionRecord.objects.all().count()
 

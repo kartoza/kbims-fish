@@ -7,6 +7,7 @@ from fish.api_views.fish_collection_record import (
     FishCollectionDetail,
     FishCollectionSite,
 )
+from fish.api_views.summary import FishSummary
 from fish.views.csv_upload import CsvUploadView
 from fish.views.shapefile_upload import \
     ShapefileUploadView, fish_process_shapefiles
@@ -31,6 +32,7 @@ api_urls = [
     url(r'^fish/download-csv-site/(?P<pk_site>[0-9]+)/$',
         download_csv_site_detailed_dashboard,
         name='fish-site-download'),
+    url(r'^api/fish-summary/$', FishSummary.as_view()),
 ]
 
 urlpatterns = api_urls

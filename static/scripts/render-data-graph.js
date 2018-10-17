@@ -11,8 +11,19 @@ var categoryOrigin = [];
 var originData = {};
 var originDataDate = {};
 
+var parameters = '';
+var urlTemplate = _.template("?taxon=<%= taxon %>&search=<%= search %>&siteId=<%= siteId %>" +
+            "&collector=<%= collector %>&category=<%= category %>" +
+            "&yearFrom=<%= yearFrom %>&yearTo=<%= yearTo %>&months=<%= months %>&boundary=<%= boundary %>&userBoundary=<%= userBoundary %>" +
+            "&referenceCategory=<%= referenceCategory %>&reference=<%= reference %>");
+if (typeof filterParameters !== 'undefined') {
+    parameters = filterParameters;
+    parameters['taxon'] = '';
+    parameters['siteId'] = locationSitePk;
+}
+
 $.ajax({
-    url: '/api/fish-collections-site/' + locationSitePk + '/',
+    url: '/api/fish-collections-site/' + urlTemplate(parameters),
     dataType: 'json',
     success: function (data) {
         // reset graph
@@ -143,7 +154,8 @@ $.ajax({
 
             occurenceTable.append(recordTable);
         });
-        $('#occurence-table').html(occurenceTable).prepend('<span>Fish</span>&nbsp;&nbsp;<a style="text-decoration: underline; font-size: 11pt; !important;" href="/fish/download-csv-site/' + locationSitePk + '/">Download as CSV</a>');
+        $('#occurence-table').html(occurenceTable).prepend("<span>Fish </span>&nbsp;&nbsp;<a style='text-decoration: underline; font-size: 11pt; !important;' href='/fish/download-csv-site/" +
+            urlTemplate(parameters) + "'>Download as CSV</a>");
 
         createPieChart(document.getElementById("fish-category-graph").getContext('2d'), Object.values(originData), categoryOrigin, pieOptions, originColor);
         createTimelineGraph(document.getElementById("fish-timeline-graph").getContext('2d'), originDataDate, filteredDataset, originOptions);

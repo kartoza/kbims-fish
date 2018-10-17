@@ -3,29 +3,52 @@ import csv
 from django.http import HttpResponse
 from bims.models.location_site import LocationSite
 from fish.models.fish_collection_record import FishCollectionRecord
+from bims.api_views.collection import GetCollectionAbstract
 
 
-def download_csv_site_detailed_dashboard(request, pk_site):
-    fish_collection = FishCollectionRecord.objects.filter(site=pk_site)
-    location_site = LocationSite.objects.get(pk=pk_site)
+def download_csv_site_detailed_dashboard(request):
+    site_id = request.GET.get('siteId')
+    query_value = request.GET.get('search')
+    filters = request.GET
+
     fields = [f.name for f in FishCollectionRecord._meta.get_fields()]
     fields.remove('ready_for_validation')
     fields.remove('validated')
+    if 'biologicalcollectionrecord_ptr' in fields:
+        fields.remove('biologicalcollectionrecord_ptr')
+
     # Create the HttpResponse object with the appropriate CSV header.
+    location_site = LocationSite.objects.get(id=site_id)
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = \
         'attachment; filename="'+ location_site.name +'.csv"'
 
     writer = csv.writer(response)
-    writer.writerow(['Location site name', location_site.name])
-    writer.writerow(['Total records', len(fish_collection)])
-    writer.writerow([''])
-    writer.writerow(fields)
 
-    for fish in fish_collection:
+    # Search collection
+    collection_results, \
+    site_results, \
+    fuzzy_search = GetCollectionAbstract.apply_filter(
+            query_value,
+            filters,
+            ignore_bbox=True)
+
+    if not collection_results:
+        return response
+
+    records = [q.object for q in collection_results]
+
+    writer.writerow(['Location site name', location_site.name])
+    writer.writerow(['Total records', len(records)])
+    writer.writerow([''])
+    writer.writerow(fields + ['coordinates'])
+
+    for fish in records:
+        record = fish.get_children()
         row_object = []
         for field in fields:
-            row_object.append(getattr(fish, field))
+            row_object.append(getattr(record, field))
+        row_object.append('%s,%s' % record.site.get_centroid().coords)
         writer.writerow(row_object)
 
     return response

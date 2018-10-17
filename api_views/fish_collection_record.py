@@ -5,6 +5,7 @@ from rest_framework.views import APIView
 from fish.models.fish_collection_record import FishCollectionRecord
 from fish.serializers.fish_collection_serializer import \
     FishCollectionSerializer
+from bims.api_views.collection import GetCollectionAbstract
 
 
 class FishCollectionList(APIView):
@@ -41,7 +42,19 @@ class FishCollectionSite(APIView):
     Retrieve a fish collection instance.
     """
 
-    def get(self, request, pk_site, format=None):
-        fish_collection = FishCollectionRecord.objects.filter(site=pk_site)
-        serializer = FishCollectionSerializer(fish_collection, many=True)
+    def get(self, request):
+        query_value = request.GET.get('search')
+        filters = request.GET
+
+        # Search collection
+        collection_results, \
+        site_results, \
+        fuzzy_search = GetCollectionAbstract.apply_filter(
+                query_value,
+                filters,
+                ignore_bbox=True)
+
+        serializer = FishCollectionSerializer(
+                [q.object.get_children() for q in collection_results],
+                many=True)
         return Response(serializer.data)

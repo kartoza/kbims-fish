@@ -10,6 +10,17 @@ var pieOptions = {
 var categoryOrigin = [];
 var originData = {};
 var originDataDate = {};
+var categories = {
+    'indigenous': 'Native',
+    'alien': 'Non-Native',
+    'translocated': 'Translocated'
+};
+
+var categoryColor = {
+    'Native': '#a13447',
+    'Non-Native': '#00a99d',
+    'Translocated': '#e0d43f'
+};
 
 var parameters = '';
 var urlTemplate = _.template("?taxon=<%= taxon %>&search=<%= search %>&siteId=<%= siteId %>" +
@@ -36,8 +47,8 @@ $.ajax({
         originDataDate = [];
 
         $.each(data, function (key, value) {
-            if($.inArray(value['category'], categoryOrigin) === -1){
-                categoryOrigin.push(value['category'])
+            if($.inArray(categories[value['category']], categoryOrigin) === -1){
+                categoryOrigin.push(categories[value['category']]);
             }
         });
         
@@ -51,7 +62,7 @@ $.ajax({
             for(var j=0; j<Object.keys(dataByDate).length; j++){
                 dataNumber.push(dataByDate[Object.keys(dataByDate)[j]][categoryOrigin[u]])
             }
-            var assignedColor = getRandomColor();
+            var assignedColor = categoryColor[categoryOrigin[u]];
             filteredDataset.push({
                 label: categoryOrigin[u],
                 data: dataNumber,
@@ -62,11 +73,12 @@ $.ajax({
 
         for(var i=0; i<data.length; i++){
             $.each(categoryOrigin, function (idx, val) {
-                if(data[i]['category'] === val){
-                    if (!(val in originData)){
-                        originData[val] = 1
+                var category = val;
+                if(categories[data[i]['category']] === category){
+                    if (!(category in originData)){
+                        originData[category] = 1
                     }else {
-                        originData[val] += 1
+                        originData[category] += 1
                     }
                 }
             })
@@ -159,7 +171,7 @@ $.ajax({
 
         createPieChart(document.getElementById("fish-category-graph").getContext('2d'), Object.values(originData), categoryOrigin, pieOptions, originColor);
         createTimelineGraph(document.getElementById("fish-timeline-graph").getContext('2d'), originDataDate, filteredDataset, originOptions);
-        createTimelineGraph(document.getElementById("records-timeline-graph").getContext('2d'), originDataDate, objectDatasets, recordsOptions)
+        createTimelineGraph(document.getElementById("records-timeline-graph").getContext('2d'), originDataDate, objectDatasets, recordsOptions);
 
         pieOptions['tooltips'] = {
             callbacks: {
@@ -167,7 +179,7 @@ $.ajax({
                     return "coming soon";
                 }
             }
-        }
+        };
 
         createPieChart(document.getElementById("cons-status-graph").getContext('2d'), pieData, ['coming soon'], pieOptions, pieColor);
         createPieChart(document.getElementById("sampling-method-graph").getContext('2d'), pieData, ['coming soon'], pieOptions, pieColor);
@@ -210,7 +222,7 @@ function countObjectPerDateCollection(data) {
             dataByDate[year][origin] = 0;
            $.each(data, function (key, value) {
                var valueYear = new Date(value['collection_date']).getFullYear();
-                if(value['category'] == origin && valueYear == year){
+                if(categories[value['category']] === origin && valueYear === year){
                     dataByDate[year][origin] += 1;
                 }
             })

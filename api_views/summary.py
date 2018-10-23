@@ -7,24 +7,28 @@ from rest_framework.views import APIView
 
 
 class FishSummary(APIView):
+    """Returns fish summary"""
 
     def get(self, request, *args):
         category = 'category'
-        fish_summary = \
-            FishCollectionRecord.objects.values(
-                category).annotate(total=Count(category))
+        fishes = FishCollectionRecord.objects.filter(validated=True)
+        fish_summary = fishes.values(
+                category).annotate(
+                total=Count(category))
 
         response = {
             category: {}
         }
 
         for summary in fish_summary:
-            class_name = summary[category]
-            if not class_name:
+            category_name = summary[category]
+            if not category_name:
                 continue
 
-            response[category][class_name] = summary['total']
+            response[category][category_name] = summary['total']
 
-        response['total_fish'] = FishCollectionRecord.objects.all().count()
+        response['total_fish'] = fishes.count()
+        response['total_fish_site'] = len(
+                fishes.values_list('site').distinct())
 
         return Response(response)

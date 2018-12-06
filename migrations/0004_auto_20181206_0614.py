@@ -10,6 +10,7 @@ class Migration(migrations.Migration):
     dependencies = [
         ('bims', '0087_merge_20181206_0607'),
         ('fish', '0003_auto_20181001_0351'),
+        ('healthyrivers_base', '0002_migrate_fish_data'),
     ]
 
     operations = [

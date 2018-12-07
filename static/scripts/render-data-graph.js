@@ -13,7 +13,9 @@ var originDataDate = {};
 var categories = {
     'indigenous': 'Native',
     'alien': 'Non-Native',
-    'translocated': 'Translocated'
+    'translocated': 'Translocated',
+    'native': 'Native',
+    'non-native': 'Non-Native'
 };
 
 var categoryColor = {
@@ -148,7 +150,7 @@ $.ajax({
         });
         var objectDatasets= [{
                         data: Object.values(objectPerDate),
-                        backgroundColor: getRandomColor(),
+                        backgroundColor: '#546c44',
                     }];
 
         var occurenceTable = $('<table></table>');
